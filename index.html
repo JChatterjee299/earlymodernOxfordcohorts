@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Members of the University of Oxford, 1500–1714</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Spectral:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F4F3EF; --surface:#FCFBF8; --ink:#1D2230; --muted:#5E6472;
+    --line:#DEDBD1; --line-soft:#EBE8E0; --navy:#0A2E52; --navy-tint:#E2E8F0;
+    --gold:#8A6D2B; --gold-tint:#EFE6CF;
+    --display:"Fraunces",Georgia,serif; --serif:"Spectral",Georgia,serif;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+    font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+  a{color:var(--navy)}
+  .eyebrow{font-family:var(--sans);font-size:11.5px;font-weight:600;letter-spacing:.13em;
+    text-transform:uppercase;color:var(--muted);margin:0 0 13px}
+
+  header.mast{padding:60px 0 30px;border-bottom:1px solid var(--line)}
+  header.mast h1{font-family:var(--display);font-weight:500;font-size:clamp(32px,5vw,54px);
+    line-height:1.05;letter-spacing:-.012em;margin:0 0 16px;max-width:18ch;
+    font-variation-settings:"opsz" 120}
+  .lede{font-weight:300;font-size:clamp(16px,2.2vw,20px);max-width:60ch;margin:0 0 14px;
+    line-height:1.45;color:#2A313D}
+  .lede.sub{font-size:clamp(14px,1.8vw,16px);color:#4A5163;margin:0 0 22px}
+  .stats{font-family:var(--sans);font-size:13px;color:var(--muted)}
+  .stats .n{color:var(--ink);font-weight:600}
+
+  .panel{margin:26px 0;background:var(--surface);border:1px solid var(--line);border-radius:14px;
+    padding:22px 22px 8px}
+  .controls{display:grid;grid-template-columns:2fr 1fr 1fr 1.2fr;gap:16px;align-items:end}
+  .field{display:flex;flex-direction:column;gap:7px;min-width:0}
+  .field.full{grid-column:1 / -1}
+  .field label{font-family:var(--sans);font-size:12px;font-weight:600;color:var(--muted);
+    letter-spacing:.02em}
+  select,input[type=number],input[type=text]{font-family:var(--sans);font-size:14.5px;color:var(--ink);
+    padding:10px 12px;border:1px solid var(--line);border-radius:9px;background:var(--paper);width:100%}
+  select:focus,input:focus{outline:0;border-color:var(--navy);box-shadow:0 0 0 3px rgba(10,46,82,.12);
+    background:var(--surface)}
+  .resulthead{font-family:var(--sans);font-size:13px;color:var(--muted);padding:16px 2px 4px;
+    display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  .resulthead b{color:var(--ink);font-weight:600}
+  .csvbtn{font-family:var(--sans);font-size:12px;font-weight:600;color:var(--navy);
+    background:var(--navy-tint);border:0;border-radius:999px;padding:5px 14px;cursor:pointer;display:none}
+  .csvbtn:hover{filter:brightness(.97)}
+
+  .list{margin-top:6px}
+  .person{padding:18px 2px;border-top:1px solid var(--line-soft)}
+  .person:first-child{border-top:0}
+  .p-name{font-family:var(--display);font-weight:500;font-size:19px;letter-spacing:-.005em;
+    margin:0 0 5px;font-variation-settings:"opsz" 34}
+  .p-meta{font-family:var(--sans);font-size:12.5px;color:var(--muted);margin:0 0 9px;
+    display:flex;flex-wrap:wrap;gap:7px;align-items:center}
+  .chip{font-family:var(--sans);font-size:11.5px;font-weight:600;border-radius:999px;padding:2px 10px}
+  .chip.col{color:var(--navy);background:var(--navy-tint)}
+  .chip.yr{color:var(--gold);background:var(--gold-tint)}
+  .chip.deg{color:#4A5163;background:#E9ECE4}
+  .dot{width:3px;height:3px;border-radius:50%;background:#C2C8BC;display:inline-block}
+  .p-text{font-family:var(--serif);font-weight:300;font-size:16px;line-height:1.55;color:#23293A}
+  .p-len{font-family:var(--sans);font-size:11px;color:#9AA2AD;margin-top:7px}
+  .divider{font-family:var(--sans);font-size:12px;font-weight:600;letter-spacing:.06em;
+    text-transform:uppercase;color:var(--muted);padding:22px 2px 4px;border-top:1px solid var(--line)}
+
+  .empty,.msg{font-family:var(--serif);color:var(--muted);padding:34px 2px;max-width:46ch;font-size:16px}
+  .empty .mark{font-family:var(--display);font-size:30px;color:#C6CCC0;margin-bottom:8px}
+
+  footer{border-top:1px solid var(--line);padding:30px 0 60px;font-family:var(--sans);
+    font-size:12.5px;color:var(--muted);line-height:1.65;max-width:72ch}
+  footer b{color:var(--ink);font-weight:600}
+
+  @media (max-width:720px){
+    .controls{grid-template-columns:1fr 1fr;gap:13px}
+    .field.col-wide{grid-column:1 / -1}
+    header.mast{padding:44px 0 26px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="mast">
+    <p class="eyebrow">A searchable index · built on Foster's <em>Alumni Oxonienses</em></p>
+    <h1>Members of the University of Oxford, 1500–1714</h1>
+    <p class="lede">A finding aid for the prosopographical study of Oxford's colleges: reconstruct the cohort of any college or hall across a chosen span of years — every member admitted, ranked by the fullness of what Joseph Foster recorded of them — or search the whole University for an individual by name. The text is the double-rekeyed edition of Foster at <a href="https://www.british-history.ac.uk/alumni-oxon/1500-1714">British History Online</a>.</p>
+    <p class="lede sub">Any result set can be downloaded as CSV for analysis, and every search is written into the page address, so a query — a college cohort, a family, a name — can be cited or shared as a stable link. Most members entered by matriculation; fellows, Students, demies, scholars, choristers and the like are dated by that admission and labelled.</p>
+    <div class="stats" id="stats">Loading…</div>
+  </header>
+
+  <section class="panel" aria-label="Search">
+    <div class="controls">
+      <div class="field full">
+        <label for="name">Name (surname, or “surname, forename” — spelling as Foster gives it; try variants: Smith and Smyth)</label>
+        <input type="text" id="name" placeholder="e.g. Fell — or leave blank to browse a college cohort">
+      </div>
+      <div class="field col-wide">
+        <label for="college">College or hall</label>
+        <select id="college"><option value="">All colleges…</option></select>
+      </div>
+      <div class="field">
+        <label for="from">From (admission)</label>
+        <input type="number" id="from" min="1500" max="1714" step="1" placeholder="1500">
+      </div>
+      <div class="field">
+        <label for="to">To</label>
+        <input type="number" id="to" min="1500" max="1714" step="1" placeholder="1714">
+      </div>
+      <div class="field">
+        <label for="sort">Order by</label>
+        <select id="sort">
+          <option value="len">Fullness of entry</option>
+          <option value="yr">Admission year</option>
+          <option value="name">Surname</option>
+        </select>
+      </div>
+    </div>
+    <div class="resulthead"><span id="rhtext"></span><button class="csvbtn" id="csvbtn">Download CSV</button></div>
+    <div class="list" id="list">
+      <div class="empty"><div class="mark">¶</div>Choose a college and a range of years to list its admitted members — or search a name across the whole University.</div>
+    </div>
+  </section>
+
+  <footer>
+    <b>Members of the University of Oxford, 1500–1714.</b> A search interface to Joseph Foster, <em>Alumni Oxonienses: The Members of the University of Oxford, 1500–1714</em> (Oxford, 1891–92). Reproduces the double-rekeyed text of <a href="https://www.british-history.ac.uk/alumni-oxon/1500-1714"><em>British History Online</em></a> (Institute of Historical Research), used by permission, including Foster’s Addenda and Corrigenda. Interface and dataset prepared by Jacob Donald Chatterjee, New College, Oxford. Before the matriculation register begins in 1565, members appear by their college admissions (fellow, demy, scholar, chorister, Student and the like); thereafter year is of matriculation, or for members admitted by other routes (fellow, Student, demy, scholar, chorister, servitor, and the like) of that admission, shown as “adm.” with the route named. Ordering is by length of Foster's entry, a proxy for the amount recorded, not for historical importance. Name search also reaches members with no recorded admission year (degree-only men, incorporations from Cambridge, and cross-references), listed separately.
+  </footer>
+</div>
+
+<script>
+window.EMBEDDED = null; /* EMBED_MARKER: build_alumni.py injects sample data here for preview.html */
+
+(function(){
+  const $ = id => document.getElementById(id);
+  const list=$("list"), rhtext=$("rhtext"), csvbtn=$("csvbtn"), sel=$("college"),
+        fromI=$("from"), toI=$("to"), sortI=$("sort"), nameI=$("name"), stats=$("stats");
+  let INDEX=[], bySlug={}, current=null, NAMES=null, UNPLACED=null;
+  const shardCache={};
+  let lastRows={kept:[],unplaced:[]};
+  const EMPTY = `<div class="empty"><div class="mark">¶</div>Choose a college and a range of years to list its admitted members — or search a name across the whole University.</div>`;
+
+  async function getIndex(){
+    if(window.EMBEDDED) return window.EMBEDDED.index;
+    const r = await fetch("data/index.json"); if(!r.ok) throw new Error("index"); return r.json();
+  }
+  async function getCollege(slug){
+    if(shardCache[slug]) return shardCache[slug];
+    let d;
+    if(window.EMBEDDED) d = window.EMBEDDED.colleges[slug] || [];
+    else{ const r = await fetch("data/colleges/"+slug+".json"); if(!r.ok) throw new Error("shard"); d = await r.json(); }
+    shardCache[slug]=d; return d;
+  }
+  async function ensureNames(){
+    if(NAMES) return;
+    if(window.EMBEDDED){
+      const slugs=Object.keys(window.EMBEDDED.colleges), k=[];
+      slugs.forEach((s,si)=>window.EMBEDDED.colleges[s].forEach((r,ri)=>k.push([r.sur,r.fore,r.yr,si,ri])));
+      NAMES={slugs,k,u:[]}; UNPLACED=[]; return;
+    }
+    const r=await fetch("data/names.json"); if(!r.ok) throw new Error("names"); NAMES=await r.json();
+  }
+  async function ensureUnplaced(){
+    if(UNPLACED) return;
+    if(window.EMBEDDED){ UNPLACED=[]; return; }
+    try{ const r=await fetch("data/unplaced.json"); UNPLACED = r.ok ? await r.json() : []; }
+    catch(e){ UNPLACED=[]; }
+  }
+  function esc(s){ const d=document.createElement("div"); d.textContent=s==null?"":s; return d.innerHTML; }
+  const norm = s => (s||"").toLowerCase().replace(/[^a-z]/g,"");
+
+  function personHTML(r){
+    const deg = (r.deg&&r.deg.length) ? `<span class="dot"></span><span class="chip deg">${esc(r.deg.join(" "))}</span>` : "";
+    const age = r.age ? `<span class="dot"></span>aged ${r.age}` : "";
+    const src = r.src ? `<span class="dot"></span><span class="chip deg">${esc(r.src)}</span>` : "";
+    const isMatric = !r.entry || r.entry === "matriculated";
+    const route = (!isMatric && r.entry) ? `<span class="dot"></span><span class="chip deg">${esc(r.entry)}</span>` : "";
+    const colChip = r.col ? `<span class="chip col">${esc(r.col)}</span>` : `<span class="chip col">no college recorded</span>`;
+    const yrChip = r.yr ? `<span class="chip yr">${isMatric?"matric.":"adm."} ${r.yr}</span>` : `<span class="chip yr">no admission year</span>`;
+    const lenLine = r.len ? `<p class="p-len">${r.len} characters</p>` : "";
+    return `<div class="person">
+      <p class="p-name">${esc(r.sur)}, ${esc(r.fore)}</p>
+      <p class="p-meta">${colChip} ${yrChip}${route}${deg}${age}${src}</p>
+      <p class="p-text">${esc(r.txt)}</p>${lenLine}
+    </div>`;
+  }
+  function sortRows(rows){
+    const key=sortI.value;
+    if(key==="len") rows.sort((a,b)=> (b.len||0)-(a.len||0));
+    else if(key==="yr") rows.sort((a,b)=> (a.yr||0)-(b.yr||0) || (b.len||0)-(a.len||0));
+    else rows.sort((a,b)=> (a.sur+a.fore).localeCompare(b.sur+b.fore));
+    return rows;
+  }
+  function setHash(){
+    const p=new URLSearchParams();
+    if(nameI.value.trim()) p.set("n",nameI.value.trim());
+    if(sel.value) p.set("c",sel.value);
+    if(fromI.value) p.set("f",fromI.value);
+    if(toI.value) p.set("t",toI.value);
+    if(sortI.value!=="len") p.set("s",sortI.value);
+    const h=p.toString();
+    history.replaceState(null,"", h ? "#"+h : location.pathname+location.search);
+  }
+  function showCSV(on){ csvbtn.style.display = on ? "inline-block" : "none"; }
+  function toCSV(){
+    const rows=[...lastRows.kept, ...lastRows.unplaced];
+    const head=["surname","forename","college","year","entry_route","age","degrees","source","entry_length","entry_text"];
+    const q=v=>'"'+String(v==null?"":v).replace(/"/g,'""')+'"';
+    const lines=[head.join(",")].concat(rows.map(r=>[
+      r.sur,r.fore,r.col||"",r.yr||"",r.entry||"",r.age||"",(r.deg||[]).join(" "),r.src||"",r.len||"",r.txt
+    ].map(q).join(",")));
+    const blob=new Blob([lines.join("\n")],{type:"text/csv;charset=utf-8"});
+    const a=document.createElement("a");
+    a.href=URL.createObjectURL(blob);
+    a.download="alumni_oxonienses_search.csv";
+    a.click(); URL.revokeObjectURL(a.href);
+  }
+
+  function renderCollege(){
+    if(!current) return;
+    const lo=parseInt(fromI.value,10)||1500, hi=parseInt(toI.value,10)||1714;
+    let rows=sortRows(current.filter(r=>r.yr>=lo&&r.yr<=hi).slice());
+    const cname=bySlug[sel.value]?bySlug[sel.value].name:"";
+    rhtext.innerHTML=`<b>${rows.length}</b> member${rows.length===1?"":"s"} of ${esc(cname)}, ${lo}–${hi}`;
+    lastRows={kept:rows,unplaced:[]}; showCSV(rows.length>0);
+    const cap=2000, shown=rows.slice(0,cap);
+    list.innerHTML=shown.map(personHTML).join("");
+    if(rows.length>cap) list.innerHTML+=`<div class="msg">Showing the first ${cap} of ${rows.length}. Narrow the year range to see the rest.</div>`;
+    if(!rows.length) list.innerHTML=`<div class="msg">No members of ${esc(cname)} admitted between ${lo} and ${hi}.</div>`;
+    setHash();
+  }
+
+  async function runNameSearch(){
+    const q=nameI.value.trim();
+    if(!q){
+      if(sel.value){ renderCollege(); } else { rhtext.innerHTML=""; showCSV(false); list.innerHTML=EMPTY; setHash(); }
+      return;
+    }
+    list.innerHTML=`<div class="msg">Searching…</div>`;
+    try{ await ensureNames(); }catch(e){
+      list.innerHTML=`<div class="msg">The name index couldn't be loaded. If you opened the file directly, note the full site must be served for its data files to load.</div>`; return;
+    }
+    const toks=q.toLowerCase().split(/[\s,]+/).map(t=>t.replace(/[^a-z]/g,"")).filter(Boolean);
+    if(!toks.length){ list.innerHTML=EMPTY; return; }
+    const match=(sur,fore)=> toks.length>=2 ? (norm(sur).startsWith(toks[0]) && norm(fore).startsWith(toks[1]))
+                                            : norm(sur).startsWith(toks[0]);
+    let hitsK=NAMES.k.filter(row=>match(row[0],row[1]));
+    if(!hitsK.length && toks.length===1) hitsK=NAMES.k.filter(row=>norm(row[0]).includes(toks[0]));
+    const slugFilter=sel.value||null;
+    if(slugFilter) hitsK=hitsK.filter(row=>NAMES.slugs[row[3]]===slugFilter);
+    const lo=parseInt(fromI.value,10)||1500, hi=parseInt(toI.value,10)||1714;
+    hitsK=hitsK.filter(row=>row[2]>=lo&&row[2]<=hi);
+    const totalK=hitsK.length, capK=400;
+    hitsK=hitsK.slice(0,capK);
+    const need=[...new Set(hitsK.map(r=>NAMES.slugs[r[3]]))];
+    for(const s of need){ await getCollege(s); }
+    let rows=sortRows(hitsK.map(r=>shardCache[NAMES.slugs[r[3]]][r[4]]).filter(Boolean));
+
+    let uRows=[];
+    if(!slugFilter && NAMES.u && NAMES.u.length){
+      await ensureUnplaced();
+      let hitsU=[];
+      NAMES.u.forEach((row,i)=>{ if(match(row[0],row[1])) hitsU.push(i); });
+      if(!hitsU.length && toks.length===1)
+        NAMES.u.forEach((row,i)=>{ if(norm(row[0]).includes(toks[0])) hitsU.push(i); });
+      uRows=hitsU.slice(0,200).map(i=>UNPLACED[i]).filter(Boolean);
+      uRows.sort((a,b)=>(a.sur+a.fore).localeCompare(b.sur+b.fore));
+    }
+
+    lastRows={kept:rows,unplaced:uRows}; showCSV(rows.length+uRows.length>0);
+    const scope = slugFilter ? ` in ${esc(bySlug[slugFilter].name)}` : "";
+    rhtext.innerHTML=`<b>${totalK}</b> member${totalK===1?"":"s"} matching “${esc(q)}”${scope}, ${lo}–${hi}`+
+      (uRows.length?` · <b>${uRows.length}</b> without a recorded admission year`:"");
+    let html=rows.map(personHTML).join("");
+    if(totalK>capK) html+=`<div class="msg">Showing the first ${capK} of ${totalK}. Add a forename, a college, or a year range to narrow.</div>`;
+    if(uRows.length){
+      html+=`<div class="divider">Without a recorded admission year — degree-only, incorporated, or cross-referenced</div>`;
+      html+=uRows.map(personHTML).join("");
+    }
+    if(window.EMBEDDED) html+=`<div class="msg">(Preview: name search covers only the embedded sample colleges. The full site searches all ${"43,908".toString()} members and the unplaced list.)</div>`;
+    if(!rows.length && !uRows.length) html=`<div class="msg">No one matching “${esc(q)}” found${scope}. Early-modern spelling varies — try Smyth for Smith, Floyd for Lloyd.</div>`;
+    list.innerHTML=html;
+    setHash();
+  }
+
+  async function pickCollege(preserveYears){
+    const slug=sel.value;
+    if(nameI.value.trim()){ runNameSearch(); return; }
+    if(!slug){ current=null; rhtext.innerHTML=""; showCSV(false); list.innerHTML=EMPTY; setHash(); return; }
+    list.innerHTML=`<div class="msg">Loading ${esc(bySlug[slug].name)}…</div>`;
+    try{
+      current=await getCollege(slug);
+      if(!preserveYears){ fromI.value=bySlug[slug].minYear; toI.value=bySlug[slug].maxYear; }
+      renderCollege();
+    }catch(e){
+      list.innerHTML=`<div class="msg">Couldn't load this college's records. If you opened the file directly, note the full site must be served (locally or on GitHub Pages) for the data files to load.</div>`;
+    }
+  }
+
+  function applyHash(){
+    const p=new URLSearchParams(location.hash.replace(/^#/,""));
+    if(p.get("s")) sortI.value=p.get("s");
+    if(p.get("f")) fromI.value=p.get("f");
+    if(p.get("t")) toI.value=p.get("t");
+    if(p.get("c") && bySlug[p.get("c")]) sel.value=p.get("c");
+    if(p.get("n")) nameI.value=p.get("n");
+    if(nameI.value.trim()) runNameSearch();
+    else if(sel.value) pickCollege(!!(p.get("f")||p.get("t")));
+  }
+
+  let deb=null;
+  async function init(){
+    try{ INDEX=await getIndex(); }
+    catch(e){
+      stats.textContent="";
+      list.innerHTML=`<div class="msg">Data not found. Run <b>build_xml.py</b> to generate the <b>data/</b> folder, then serve the site (locally or on GitHub Pages).</div>`;
+      return;
+    }
+    INDEX.sort((a,b)=>a.name.localeCompare(b.name));
+    bySlug=Object.fromEntries(INDEX.map(c=>[c.slug,c]));
+    for(const c of INDEX){
+      const o=document.createElement("option"); o.value=c.slug; o.textContent=`${c.name} (${c.count})`; sel.appendChild(o);
+    }
+    const total=INDEX.reduce((a,c)=>a+c.count,0);
+    const lo=Math.min(...INDEX.map(c=>c.minYear)), hi=Math.max(...INDEX.map(c=>c.maxYear));
+    stats.innerHTML=`<span class="n">${total.toLocaleString()}</span> members · <span class="n">${INDEX.length}</span> colleges and halls · <span class="n">${lo}–${hi}</span> · <span class="n">name search</span> across the whole University`;
+    sel.addEventListener("change",()=>pickCollege(false));
+    [fromI,toI,sortI].forEach(el=>el.addEventListener("input",()=>{
+      if(nameI.value.trim()) runNameSearch(); else if(current) renderCollege();
+    }));
+    nameI.addEventListener("input",()=>{ clearTimeout(deb); deb=setTimeout(runNameSearch,260); });
+    csvbtn.addEventListener("click",toCSV);
+    applyHash();
+  }
+  init();
+})();
+</script>
+</body>
+</html>
